@@ -8,7 +8,7 @@ public class SleepThread implements Runnable
 	public SleepThread(int n, ArrayList<Integer> list)
 	{
 		sleepTime = n * 100;
-		list = theList;
+		theList = list;
 	}	
 	
 	@Override public void run()
@@ -19,6 +19,7 @@ public class SleepThread implements Runnable
 		}
 		catch(Exception e) {}
 		
+		System.out.println("Finished sleep for value "+ (sleepTime/100));
 		//Add a value to the list
 		theList.add(sleepTime / 100);
 	}
