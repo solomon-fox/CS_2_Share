@@ -69,4 +69,9 @@ public class Main
 		}
 		System.out.println(s);
 	}
+	
+	public static void main(String[] args)
+	{
+		new Main();
+	}
 }
