@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,9 +9,14 @@ public class Main
 	ArrayList<State> closedList = new ArrayList<>();
 	State goal1 = new State(SIDE_SIZE);// , goal2 = new State(SIDE_SIZE);
 
-	public Main()
+	public Main(String fileName)
 	{
-		State current = new State(SIDE_SIZE);
+		State current = null;
+		if(fileName == null)
+			current = new State(SIDE_SIZE);
+		else
+			current = loadStateFromFile(fileName);
+		
 		ArrayList<Integer> list = new ArrayList<>();
 		for (int i = 0; i < SIDE_SIZE * SIDE_SIZE; i++)
 			list.add(i);
@@ -39,6 +45,31 @@ public class Main
 		}
 	}
 	
+	private State loadStateFromFile(String fileName)
+	{
+		State state = null;
+		try
+		{
+			Scanner in = new Scanner(new File(fileName));
+			String s = "";
+			while(in.hasNext())
+			{
+				s += in.nextLine() + ":";
+			}
+			String[] lines = s.split(":");
+			state = new State(lines.length);
+			for(int r=0; r<lines.length; r++)
+			{
+				String[] tokens = lines[r].split(" ");
+				for(int c=0; c< tokens.length; c++)
+					state.board[r][c] = Integer.parseInt(tokens[c]);
+			}
+		}
+		catch (Exception e) {e.printStackTrace();}
+		
+		return state;
+	}
+
 	private State solve(State startingState)
 	{
 		return null;
@@ -54,6 +85,11 @@ public class Main
 		ArrayList<State> successors = new ArrayList<>();
 		
 		return successors;
+	}
+	
+	private boolean isGoal(State st)
+	{
+		return h(st) == 0;
 	}
 	
 	private void printState(State st)
@@ -72,6 +108,7 @@ public class Main
 	
 	public static void main(String[] args)
 	{
-		new Main();
+		//new Main(null); //to make a random board
+		new Main("4x4_reversed.txt");	//to load the specified file
 	}
 }
