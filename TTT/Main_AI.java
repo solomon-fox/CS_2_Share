@@ -74,7 +74,7 @@ public class Main_AI
 
 	private void initializeBoard()
 	{
-		System.out.print('\u000c');
+//		System.out.print('\u000c');
 		System.out.print("Please enter the board size 'n': ");
 		int n = in.nextInt();
 		in.nextLine();

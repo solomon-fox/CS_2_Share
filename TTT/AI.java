@@ -4,76 +4,97 @@ import java.util.Arrays;
 public class AI
 {
 	char myToken = 'O', oppToken = 'X';
-	
+
 	public AI(char me, char opp)
 	{
 		myToken = me;
 		oppToken = opp;
 	}
-	
+
 	public State chooseMinimax(State st)
 	{
-		int pickRow, pickCol;
-		do
-		{
-			pickRow = (int)(Math.random() * st.board.length);
-			pickCol = (int)(Math.random() * st.board.length);
-		}while(st.board[pickRow][pickCol] != '_');
-		
-		State newState = new State(st);
-		newState.board[pickRow][pickCol] = myToken;
-		
-		return newState;
+		/*
+		 * int pickRow, pickCol; do { pickRow = (int)(Math.random() * st.board.length); pickCol = (int)(Math.random() *
+		 * st.board.length); }while(st.board[pickRow][pickCol] != '_');
+		 * 
+		 * State newState = new State(st); newState.board[pickRow][pickCol] = myToken;
+		 */
+		int bestMoveHeuristic = maxValue(st);
+
+		return null;
 	}
-	
+
 	public ArrayList<State> generateSuccessors(State st)
 	{
 		ArrayList<State> successors = new ArrayList<>();
-		
-		
+
 		return successors;
 	}
-	
+
 	private int maxValue(State st)
 	{
-		return Integer.MIN_VALUE;
+		if (isTerminal(st)) // "terminal" == game over, timed out, deep enough
+			return st.h;
+
+		//tracking the "best" choice so far
+		int v = Integer.MIN_VALUE;
+		//compare v to each child's value
+		for(State child : generateSuccessors(st))
+		{
+			child.h = h(child);
+			v = Math.max(v, minValue(child));
+		}
+
+		st.h = v;
+		return v;
 	}
-	
+
 	private int minValue(State st)
 	{
-		return Integer.MAX_VALUE;
+		if (isTerminal(st)) return st.h;
+
+		int v = Integer.MAX_VALUE;
+		for(State child : generateSuccessors(st))
+		{
+			child.h = h(child);
+			v = Math.min(v, maxValue(child));
+		}
+
+		st.h = v;
+		return v;
 	}
 	
+	
+	
+	
+
 	public int h(State st)
 	{
-		//center squares are worth 10 points
-		//corners are worth 5 points
-		//edges are worth 1 point
-		int total = 0, maxIndex = st.board.length-1, spaceValue;
-		
+		// center squares are worth 10 points
+		// corners are worth 5 points
+		// edges are worth 1 point
+		int total = 0, maxIndex = st.board.length - 1, spaceValue;
+
 		for (int r = 0; r < st.board.length; r++)
 			for (int c = 0; c < st.board.length; c++)
 			{
 				spaceValue = 1;
-				if(r == 0 && (c == 0 || c == maxIndex))
-					spaceValue = 5;
-				if(r > 0 && r < maxIndex && c > 0 && c < maxIndex)
+				if (r == 0 && (c == 0 || c == maxIndex)) spaceValue = 5;
+				if (r > 0 && r < maxIndex && c > 0 && c < maxIndex)
 					spaceValue = 10;
-				
-				if(st.board[r][c] == myToken)
-					total += spaceValue;
-				else if(st.board[r][c] == oppToken)
-					total -= spaceValue;
+
+				if (st.board[r][c] == myToken) total += spaceValue;
+				else if (st.board[r][c] == oppToken) total -= spaceValue;
 			}
-		
+
 		return total;
 	}
-	
+
 	public boolean isTerminal(State st)
 	{
 		return checkGameOver(st); // OR any other conditions, such as depth, time, etc.
 	}
-	
+
 	public boolean checkGameOver(State st)
 	{
 		char[][] b = st.board;
