@@ -1,7 +1,7 @@
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import javax.swing.JTextField;
 
 public class AI
 {
@@ -13,8 +13,13 @@ public class AI
 		oppToken = opToken;
 	}
 
-	//Method for the AI choosing a move.
-	//Initially a random agent.
+	// Choose a move NOT randomly
+	// Minimax! minValue and maxValue
+	// heuristic function - account for the opponent as well
+	// generate successors
+
+	// Method for the AI choosing a move.
+	// Initially a random agent.
 	public State chooseMove(State st)
 	{
 		State newState = new State(st);
@@ -22,7 +27,7 @@ public class AI
 		// random agent
 		Point source = new Point(), destination = new Point();
 		HashMap<Point, ArrayList<Point>> jumps = listJumps(newState);
-		
+
 		do
 		{
 			do
@@ -30,9 +35,10 @@ public class AI
 				if (jumps.size() > 0)
 				{
 					Object[] keys = jumps.keySet().toArray();
-					source = (Point)keys[(int)(Math.random() * keys.length)];
-					
-					destination = jumps.get(source).get( (int)(Math.random() * jumps.get(source).size()) );
+					source = (Point) keys[(int) (Math.random() * keys.length)];
+
+					destination = jumps.get(source).get(
+							(int) (Math.random() * jumps.get(source).size()));
 				}
 				else
 				{
@@ -46,13 +52,13 @@ public class AI
 			makeMove(newState, jumps, source, destination);
 		} while (jumps.containsKey(destination)); // for multi jumps
 
-		newState.whoseMove = newState.whoseMove == 'b' ? 'r' : 'b';	//switch to the next player
+		newState.whoseMove = newState.whoseMove == 'b' ? 'r' : 'b'; // switch to the next player
 
 		return newState;
 	}
 
 	// Takes human String input in the form "10-19-26", validates, then executes the move.
-	public State processMove(State st, String moveText)
+	public State processMove(State st, String moveText, JTextField textField)
 	{
 		String[] moves = moveText.split("-");
 		Point source = translateLocationFromString(moves[0]);
@@ -63,21 +69,27 @@ public class AI
 		{
 			Point destination = translateLocationFromString(moves[i]);
 
-			
-			System.out.println(jumps);
-			if (isLegalMove(newState, jumps, source, destination) == 0)
+			// System.out.println(jumps);
+			int test = isLegalMove(newState, jumps, source, destination);
+			if (test == 0)
 			{
 				makeMove(newState, jumps, source, destination);
 			}
-			else return st;
+			else
+			{
+				textField.setText("Move rejected for reason " + test + "!");
+				textField.setSelectionStart(0);
+				textField.setSelectionEnd(textField.getText().length());
+				return st;
+			}
 			source = destination;
 		}
 		newState.whoseMove = newState.whoseMove == 'b' ? 'r' : 'b';
 
 		return newState;
 	}
-	
-	//Complete the move on specified State, update the jumps map.
+
+	// Complete the move on specified State, update the jumps map.
 	private void makeMove(State newState,
 			HashMap<Point, ArrayList<Point>> jumps, Point source,
 			Point destination)
@@ -92,9 +104,17 @@ public class AI
 					/ 2][(source.y + destination.y) / 2] = 0;
 			jumps = listJumps(newState);
 		}
+
+		// promote kings
+		for (int c = 0; c < newState.board.length; c++)
+		{
+			if (newState.board[0][c] == 'b') newState.board[0][c] = 'B';
+			if (newState.board[7][c] == 'r') newState.board[7][c] = 'R';
+		}
+
 	}
 
-	//Checks to see if a specific move is not legal, returns 0 if it is legal, reason number otherwise.
+	// Checks to see if a specific move is not legal, returns 0 if it is legal, reason number otherwise.
 	public int isLegalMove(State st, HashMap<Point, ArrayList<Point>> jumps,
 			Point source, Point destination)
 	{
@@ -211,21 +231,21 @@ public class AI
 		return jumps;
 	}
 
-	//Given a Point, convert it back to Checkers coordinates.
+	// Given a Point, convert it back to Checkers coordinates.
 	public int translateLocationFromPoint(Point p)
 	{
 		int c = p.x % 2 == 0 ? p.y : p.y + 1;
 
 		return (p.x * 4) + (c - (c / 2));
 	}
-	
-	//Given a String, convert it to a Point, where Point.x == row, Point.y == column.
+
+	// Given a String, convert it to a Point, where Point.x == row, Point.y == column.
 	public Point translateLocationFromString(String squareID)
 	{
 		return translateLocationFromInt(Integer.parseInt(squareID));
 	}
 
-	//Given an integer, convert it to a Point, where Point.x == row, Point.y == column.
+	// Given an integer, convert it to a Point, where Point.x == row, Point.y == column.
 	public Point translateLocationFromInt(int id)
 	{
 		int row = (id - 1) / 4;
@@ -245,7 +265,7 @@ public class AI
 		return new Point(row, col);
 	}
 
-	//Game is over if there are no pieces left for one side.
+	// Game is over if there are no pieces left for one side.
 	public boolean isGameOver(State st)
 	{
 		int rs = 0, bs = 0;

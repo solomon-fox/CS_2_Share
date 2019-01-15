@@ -73,11 +73,12 @@ public class ReverseCheckers extends JFrame implements ActionListener
 		String input = inputField.getText();
 		inputField.setText("");
 
-		State newState = ai.processMove(currentState, input);
+		State newState = ai.processMove(currentState, input, inputField);
 		if (newState.equals(currentState)) infoLabel.setText("Invalid move!");
 		else
 		{
 			currentState = newState;
+			infoLabel.setText("Move accepted!");
 			if (ai.isGameOver(currentState))
 			{
 				infoLabel.setText("Game over!");
@@ -86,6 +87,11 @@ public class ReverseCheckers extends JFrame implements ActionListener
 			Thread t = new Thread() { public void run(){ canvas.updateBoard(currentState); }};
 			t.start();
 			doAIMove();
+			if (ai.isGameOver(currentState))
+			{
+				infoLabel.setText("Game over!");
+				inputField.setEnabled(false);
+			}
 		}
 
 	}
