@@ -4,7 +4,7 @@ import java.util.Arrays;
 public class AI
 {
 	char myToken = 'O', oppToken = 'X';
-	long startTime = 0, MAX_RUNNING_TIME = 30000;
+	long startTime = 0, MAX_RUNNING_TIME = 30000, MAX_DEPTH = 8;
 
 	public AI(char me, char opp)
 	{
@@ -31,6 +31,32 @@ public class AI
 	{
 		ArrayList<State> successors = new ArrayList<>();
 
+		//count the number of xs and os to see whose turn it is
+		int xs = 0, os = 0;
+		for (int r = 0; r < st.board.length; r++)
+			for (int c = 0; c < st.board.length; c++)
+			{
+				if(st.board[r][c] == 'X')
+					xs++;
+				if(st.board[r][c] == 'O')
+					os++;
+			}
+		
+		char token = 'X';
+		if(xs > os)
+			token = 'O';
+		
+		for (int r = 0; r < st.board.length; r++)
+			for (int c = 0; c < st.board.length; c++)
+			{
+				if(st.board[r][c] == '_')
+				{
+					State newState = new State(st);
+					newState.board[r][c] = token;
+					successors.add(newState);
+				}
+			}
+		
 		return successors;
 	}
 
@@ -72,8 +98,6 @@ public class AI
 		st.h = v;
 		return bestState;
 	}
-	
-	
 	
 	
 
