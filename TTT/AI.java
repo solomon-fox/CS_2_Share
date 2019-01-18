@@ -4,6 +4,7 @@ import java.util.Arrays;
 public class AI
 {
 	char myToken = 'O', oppToken = 'X';
+	long startTime = 0, MAX_RUNNING_TIME = 30000;
 
 	public AI(char me, char opp)
 	{
@@ -19,9 +20,11 @@ public class AI
 		 * 
 		 * State newState = new State(st); newState.board[pickRow][pickCol] = myToken;
 		 */
-		int bestMoveHeuristic = maxValue(st);
+//		int bestMoveHeuristic = maxValue(st);
+		startTime = System.currentTimeMillis();
+		State bestMove = maxValue(st);
 
-		return null;
+		return bestMove;
 	}
 
 	public ArrayList<State> generateSuccessors(State st)
@@ -31,37 +34,43 @@ public class AI
 		return successors;
 	}
 
-	private int maxValue(State st)
+	private State maxValue(State st)
 	{
 		if (isTerminal(st)) // "terminal" == game over, timed out, deep enough
-			return st.h;
+			return st;
 
 		//tracking the "best" choice so far
 		int v = Integer.MIN_VALUE;
+		State bestState = null;
 		//compare v to each child's value
 		for(State child : generateSuccessors(st))
 		{
 			child.h = h(child);
-			v = Math.max(v, minValue(child));
+			v = Math.max(v, minValue(child).h);
+			if(bestState == null || child.h == v)
+				bestState = child;
 		}
 
 		st.h = v;
-		return v;
+		return bestState;
 	}
 
-	private int minValue(State st)
+	private State minValue(State st)
 	{
-		if (isTerminal(st)) return st.h;
+		if (isTerminal(st)) return st;
 
 		int v = Integer.MAX_VALUE;
+		State bestState = null;
 		for(State child : generateSuccessors(st))
 		{
 			child.h = h(child);
-			v = Math.min(v, maxValue(child));
+			v = Math.min(v, maxValue(child).h);
+			if(bestState == null || child.h == v)
+				bestState = child;
 		}
 
 		st.h = v;
-		return v;
+		return bestState;
 	}
 	
 	
@@ -90,9 +99,12 @@ public class AI
 		return total;
 	}
 
+	//when should we terminate Minimax
 	public boolean isTerminal(State st)
 	{
-		return checkGameOver(st); // OR any other conditions, such as depth, time, etc.
+		return ( System.currentTimeMillis() - startTime > MAX_RUNNING_TIME ||
+				st.depth >= MAX_DEPTH ||
+				checkGameOver(st)); // OR any other conditions, such as depth, time, etc.
 	}
 
 	public boolean checkGameOver(State st)
