@@ -16,7 +16,8 @@ public class BSTTester
 			s = in.nextLine();
 			if(s.equals("-1"))
 				break;
-			tree.insert( new BSTNode(s) );	//tree.RecursiveInsert(new BSTNode(s));
+			tree.insert( new BSTNode(s) );	
+			//tree.recursiveInsert(new BSTNode(s));
 		}
 		in.close();
 		
