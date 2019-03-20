@@ -9,9 +9,9 @@ public class Main
 	public Main()
 	{
 		String rawText = loadFile(FILENAME);
-		System.out.println("Original String: ");
-		//prints out the original file, contents now stored in rawText
-		System.out.println(rawText);
+		System.out.print("Original String (first 250 characters, total "+(rawText.length()*8)+" bits): ");
+		System.out.println(rawText.substring(0,250));
+		//Prints out the original file, contents now stored in rawText.
 		
 		/** HUFFMAN ENCODING GOES HERE
 		 * I suggest following the document HuffmanHandout.pdf.
@@ -36,8 +36,10 @@ public class Main
 		 * 		record the character in the leaf and its sequence.
 		 */
 		
-		//saves the String rawText into the original file
+		//Saves the String rawText into the original file, displays a bit of info about it.
+		//You'll want to replace rawText with the encoded binary String developed from the algorithm.
 		saveFile(FILENAME, rawText);
+		System.out.println("Encoded (First 500 digits, total "+rawText.length()+" bits):\n"+rawText.substring(0,500));
 	}
 	
 	private String loadFile(String fName)
