@@ -5,9 +5,9 @@ import java.util.Scanner;
 public class Main
 {
 	Scanner input = new Scanner(System.in);
-	final int SIDE_SIZE = 4;
+	int SIDE_SIZE = 4;
 	ArrayList<State> closedList = new ArrayList<>();
-	State goal1 = new State(SIDE_SIZE);// , goal2 = new State(SIDE_SIZE);
+	State goal1;
 
 	public Main(String fileName)
 	{
@@ -17,12 +17,16 @@ public class Main
 		else
 			current = loadStateFromFile(fileName);
 		
+		goal1 = new State(SIDE_SIZE);
 		ArrayList<Integer> list = new ArrayList<>();
 		for (int i = 0; i < SIDE_SIZE * SIDE_SIZE; i++)
 			list.add(i);
 		for (int r = 0; r < SIDE_SIZE; r++)
 			for (int c = 0; c < SIDE_SIZE; c++)
 				if (list.size() > 0) goal1.board[r][c] = list.remove(0);
+		
+		System.out.println("Goal state h:" + h(goal1));
+		printState(goal1);
 
 		System.out.println("Starting State h:" + h(current));
 		printState(current);
@@ -83,6 +87,7 @@ public class Main
 				s += in.nextLine() + ":";
 			}
 			String[] lines = s.split(":");
+			SIDE_SIZE = lines.length;
 			state = new State(lines.length);
 			for(int r=0; r<lines.length; r++)
 			{
@@ -113,6 +118,6 @@ public class Main
 	public static void main(String[] args)
 	{
 		//new Main(null); //to make a random board
-		new Main("4x4_reversed.txt");	//to load the specified file
+		new Main("5x5_reversed.txt");	//to load the specified file
 	}
 }
